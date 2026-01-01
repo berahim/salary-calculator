@@ -12,7 +12,7 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-
+logger = logging.getLogger(__name__)
 app = FastAPI(title="Salary Calculator API")
 
 
