@@ -4,6 +4,8 @@ services:
   app:
     build: .
     container_name: salary-app
+    env_file:
+      - .env
     ports:
       - "8002:8001"
     volumes:

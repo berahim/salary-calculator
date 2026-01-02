@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 import logging
+import os
 from datetime import datetime
 
 # Configure logging to file
 logging.basicConfig(
-    level=logging.INFO,
+    level=getattr(logging, os.getenv('LOG_LEVEL', 'INFO')),
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler('/app/logs/salary_calculations.log'),
@@ -37,7 +38,7 @@ async def calculate_salary(salary: SalaryRequest):
     Calculate net salary from gross salary.
     Net salary = Gross salary * 0.6
     """
-    tax_rate = 0.6
+    tax_rate = float(os.getenv('TAX_RATE', '0.6'))
     net_salary = salary.gross_salary * tax_rate
 
     # Log the calculation

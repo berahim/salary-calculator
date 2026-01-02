@@ -6,6 +6,8 @@ COPY main.py .
 
 # Create logs directory
 RUN mkdir -p /app/logs
-
-EXPOSE 8001
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+ENV PORT=8001
+ENV TAX_RATE=0.6
+ENV LOG_LEVEL=INFO
+EXPOSE $PORT
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
