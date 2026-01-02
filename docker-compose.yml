@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: salary-app
+    ports:
+      - "8002:8001"
+    volumes:
+      - salary-logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  salary-logs:
