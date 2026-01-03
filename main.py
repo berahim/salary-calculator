@@ -3,6 +3,8 @@ from pydantic import BaseModel, Field
 import logging
 import os
 from datetime import datetime
+from fastapi import HTTPException, Security
+from fastapi.security import APIKeyHeader
 
 # Configure logging to file
 logging.basicConfig(
@@ -15,6 +17,28 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 app = FastAPI(title="Salary Calculator API")
+
+# API Key security
+API_KEY_NAME = "X-API-Key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+async def get_api_key(api_key: str = Security(api_key_header)):
+    # Try to read from Docker secret file first, fallback to env var
+    api_key_file = os.getenv("API_KEY_FILE")
+
+    if api_key_file and os.path.exists(api_key_file):
+        with open(api_key_file, "r") as f:
+            correct_api_key = f.read().strip()
+    else:
+        correct_api_key = os.getenv("API_KEY", "default-key")
+
+    if api_key == correct_api_key:
+        return api_key
+
+    raise HTTPException(
+        status_code=403,
+        detail="Invalid API Key",
+    )
 
 
 class SalaryRequest(BaseModel):
@@ -33,7 +57,7 @@ async def root():
 
 
 @app.post("/calculate-salary", response_model=SalaryResponse)
-async def calculate_salary(salary: SalaryRequest):
+async def calculate_salary(salary: SalaryRequest, api_key: str = Security(get_api_key)):
     """
     Calculate net salary from gross salary. test brahim
     Net salary = Gross salary * 0.6
