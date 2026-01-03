@@ -21,3 +21,16 @@
 
   # Docker
   .dockerignore
+
+  # Environment files with secrets
+  .env
+  .env.local
+  .env.*.local
+
+  # Docker secrets
+  secrets/
+  *.secret
+
+  # Logs
+  *.log
+  logs/
